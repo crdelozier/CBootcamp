@@ -1,4 +1,4 @@
-CBootcamp
+UPenn C Programming Bootcamp
 =========
 
 * Before the bootcamp, please ensure that you have access to the resources listed below on your 
