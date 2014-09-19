@@ -67,10 +67,14 @@ int main(int argc, char **argv) {
   verifying they indeed pass an argument in addition to the name of the
   program).
 
-  * To process the argument we use the `atoi` function (i.e., **a**scii string
-    **to** **i**nteger) which is declared in ```stdlib.h``` header which
+  * To process the argument we use the `atoi` function (i.e., ascii string
+    **to** integer) which is declared in ```stdlib.h``` header which
     contains a variety of essential functions such as the type converters like
     `atoi` and others.
+
+    * Note: C-strings must be null-terminated, meaning that they must end in 
+      the character `\0`.  Functions like `atoi` rely on the fact that a 
+      C-string is null-terminated by looking for that specific character.
 
   * The argument `argv` is a two-dimensional array of characters.  If you're 
     not already familiar with two-dimensional arrays from another language

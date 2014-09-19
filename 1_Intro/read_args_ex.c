@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     if (val == 100) {
       printf("That's a good number!\n");
     } else {
-      printf("%d is a bad number! Do not enter %d!\n", val);
+      printf("%d is a bad number!\n", val);
     }
   }
   return 0;
