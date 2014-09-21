@@ -1,4 +1,4 @@
-CFLAGS = -g
+CFLAGS = -g -Wall
 
 bin_PROGRAMS = linked_list_test
 

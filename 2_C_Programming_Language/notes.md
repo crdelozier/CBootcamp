@@ -23,6 +23,238 @@ C data types
   * Also, many of the errors that we face as C programmers can be diagnosed as
     long as we have crisp model in our heads of how C executes.
 
+Fundamental Datatypes
+---------------------
+
+* In C, *all data is a collection of bits interpreted in various ways*.  In
+  fact, C only distinguishes data on two axes:
+
+  * The datum's size, i.e., how many bytes is it, and
+  * How do we interpret these bits?
+
+* To explore the fundamental types in C, we can build a small program that
+  inspects the sizes of each type as implmented in
+  [basic_types.c](src/basic_types.c).
+
+``` c
+#include <stdio.h>
+
+int main(void) {
+    printf("%d\n",sizeof(char));
+    printf("%d\n",sizeof(short));
+    printf("%d\n",sizeof(int));
+    printf("%d\n",sizeof(unsigned int));
+    printf("%d\n",sizeof(long));
+
+    printf("%d\n",sizeof(float));
+    printf("%d\n",sizeof(double));
+
+    return 0;
+}
+```
+
+* There are only two primary interpretations of data in C: *integers* and
+  floating-point* values.
+
+* The standard `int` is 4 bytes (32 bits) on most modern machines and devices.
+  We can access the value of the maximum integer by the `INT_MAX` constant
+  defined in `limits.h`.
+
+  * This value turns out to be `2^(32-1) - 1` which corresponds to the bit
+    pattern of all `1`s except for a `0` in the most-significant digit.
+
+  * This representation of integers is called
+    (twos-complement)[http://en.wikipedia.org/wiki/Two's_complement] which makes
+    implementation of basic numerical operations over these numbers easy.
+
+  * As a result, `1 + INT_MAX` produces the bit pattern `10000000 ... 0`.
+    Interpreting this in twos-complement results in the *most-negative* integer
+    possible.  This is an example of *arithmetic overflow*.
+
+  * If we know we do not need negative integer values, we can tell C to
+    *interpret* the bits not in two's complement but as a standard binary number
+    thus reclaiming the sign bit as an additional digit) by using the `unsigned`
+    modifier.  Note that the size of the integer type does not change with
+    `unsigned`, only the *interpretation* of the bit pattern changes!  Note: 
+    `unsigned` can be used to modify any integer data type (e.g. `unsigned char`).
+
+* `long` and `short` are modifiers on the primitive types to change sizes but
+   not their interpretation.
+
+* `char` is defined to be the smallest addressable chunk of memory on the
+  underlying hardware, i.e., 1 byte.  This comes from the fact that we represent
+  individual characters in C using the
+  [ASCII](http://en.wikipedia.org/wiki/Ascii) encoding which assigns the values
+  0-255 to different characters in the English alphabet along with other
+  symbols.
+
+  * Because `char` is a single byte, you frequently see `char` used to represent
+    raw byte arrays, e.g., `char buf [100]` declares an array of size 100 bytes
+    on the stack.
+
+* The floating point numbers are represented using the [IEEE standard for
+  floating-point arithmetic](http://en.wikipedia.org/wiki/IEEE_floating_point)
+  which defines how floats are represented with bit strings as well as
+  requirements on how operations over those floats should behave.
+
+* As you may have noticed, there is no similar type to Java's `boolean` in the
+  previous code sample.  C does not explicitly provide a boolean type, as shown 
+  in the following example ([bool.c](bool.c)):
+
+* Main takeaways from this example:
+  * Basic data-types: ints and floats and chars
+  * unsigned vs. signed and integer overflow
+  * char is a byte
+  * No boolean in C
+
+``` c
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+
+int main(int argc, char **argv) {
+    int val = 0;
+    if (1) {
+        printf("Eh!\n");
+    }
+    if (true) {
+        printf("Good...\n");
+    }
+    if (val = 0) {
+        printf("Doesn't fire...\n");
+    }
+    return 0;
+}
+```
+
+* Unlike Java, C does not have a built-in boolean type.  Instead, numeric values
+  operate as booleans where the **value zero** denotes false and any **non-zero
+  value** denotes true.
+
+  * As a convenience, you can include `stdbool.h` which defines `bool`, `true`,
+  and `false` to be `int` (really `_Bool` but it is morally a numeric type),
+  `1`, and `0`, respectively.
+
+  * For example, this makes confusing `=` and `==` within a if-statement even
+    more dangerous.  The result of an assignment is the value being assigned, so
+    the example above compiles without error but performs unexpectedly!
+
+* Main takeaways from this example:
+  * No boolean data type in C
+  * bool types and true/false defined in stdbool.h
+  * == 0 --> false and != 0 --> true
+  * Mixing up == and = is bad
+
+* Like most languages, C also provides arrays.  In C, arrays can be either 
+  stack-allocated or heap-allocated.  In future sections, we'll cover the 
+  difference and trade-offs between these two types of arrays.  In this 
+  example, we examine how to declare a stack-allocated array in C.
+  [simple_arrays.c](simple_arrays.c).
+
+``` c
+#include <stdio.h>
+
+int main(void) {
+    int arr [] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int i;
+    for (i = 0; i < 10; i++) {
+        printf("%d\n", arr[i]);
+    }
+    return 0;
+}
+```
+
+* If you are familiar with Java, you have a leg up here as it is a *C-like*
+  language.  Programming-in-the-small basics, e.g., variable declarations, basic
+  types, for-loops, and arrays, all transfer with some minor differences:
+
+  + The declaration of `arr` is the declaration of a *stack-allocated* array in
+    C.  In Java, you would flip the position of the brackets and write `int[]
+    arr = { 1, ..., 10 };`.  There is a subtle, yet very important distinction
+    here in that the Java array is (always) *heap-allocated* which we will visit
+    later in these notes.
+
+  + Note that we declare `i` on a line separate from the head of the `for` loop.
+    This is our first example of writing *safely standards compliant* code.  C
+    compilers typically support many different versions of the C language.
+    Typically the default compilation mode for most compilers is the *C89*
+    version of the spec which says that all local variables must be declared at
+    the top of the *scope blocks* they are declared in (i.e., each block
+    enclosed by curly braces).  To be safe, we respect this rule, but if you
+    know your compiler supports declaration of variable like in Java, e.g., C89
+    with GNU extensions (the gcc default) or later versions of the standard, you
+    can declare locals in the same places as you would in Java.
+
+* Main takeaways from this example:
+  * C array syntax
+  * Stack allocation
+  * Standards compliant code
+
+* C also provides `structs` for grouping data-types together into a
+  data structure.  However, since C is a procedural language and not an 
+  object-oriented language, these data structures do not have any methods 
+  associated with the data.  They are simply a convenient mechanism for 
+  grouping related pieces of data.  The following example demonstrates how
+  to declare and use structures. [structs.c](structs.c).
+
+```
+#include <stdio.h>
+
+struct point_t{
+    int x;
+    int y;
+};
+
+int main(void){
+    struct point_t p;
+    p.x = 1;
+    p.y = 2;
+
+    printf("(%d,%d)\n",p.x,p.y);
+
+    return 0;
+}
+```
+
+* In this example, we declare a point structure with two integers (an x and 
+  y coordinate).  This `struct` is simply a more convenient way to group 
+  pieces of data together.
+
+* As a matter of pragmatics, this bare `struct` definition is rarely what we
+  want.  The reason for this is that whenever we want to use this `struct`,
+  e.g., a local variable, we must qualify `point` with the `struct` keyword:
+  `struct point p`.  This is because the `struct` definition doesn't define a
+  type proper but a `struct`.
+
+* Main takeaway from this example:
+  * Struct syntax
+  * Not object-oriented - No methods
+
+* To define `point` as a type that we can use without qualification, we use
+  `typedef` to create an alias for `struct point`.  In general, `typedef`s have
+  the following form:
+
+``` c
+typedef int error_code;
+```
+
+* This example `typedef` defines `error_code` as an alias for `int`.  Therefore
+  `error_code` can be used where ever we expect an `int`.  This is useful as a
+  point of documentation to have an `error_code` type that is really an `int`.
+
+* We also use `typedef` to bring a `struct` into the type world.  For example,
+  in [point.h](src/point.h) we combine `typedef` and `struct` as follows:
+
+``` c
+typedef struct point {
+    int x;
+    int y;
+} point;
+```
+
+* While it looks redundant, this has the effect of making `point` an alias for
+  `struct point` which allows us to use `point` as a type throughout our code.
+
 The C Mental Model of Computation
 ---------------------------------
 
@@ -155,214 +387,3 @@ y [ 14 ]
   explain how the C language functions.  Remember that if you ever encounter
   strange and confusing behavior in your code, you should fall back on this
   mental model to try to make sense of the situation.
-
-Fundamental Datatypes
----------------------
-
-* In C, *all data is a collection of bits interpreted in various ways*.  In
-  fact, C only distinguishes data on two axes:
-
-  * The datum's size, i.e., how many bytes is it, and
-  * How do we interpret these bits?
-
-* To explore the fundamental types in C, we can build a small program that
-  inspects the sizes of each type as implmented in
-  [basic_types.c](src/basic_types.c).
-
-``` c
-#include <stdio.h>
-
-int main(void) {
-    printf("%d\n",sizeof(char));
-    printf("%d\n",sizeof(short));
-    printf("%d\n",sizeof(int));
-    printf("%d\n",sizeof(unsigned int));
-    printf("%d\n",sizeof(long));
-
-    printf("%d\n",sizeof(float));
-    printf("%d\n",sizeof(double));
-
-    return 0;
-}
-```
-
-* There are only two primary interpretations of data in C: *integers* and
-  floating-point* values.
-
-* The standard `int` is 4 bytes (32 bits) on most modern machines and devices.
-  We can access the value of the maximum integer by the `INT_MAX` constant
-  defined in `limits.h`.
-
-  * This value turns out to be `2^(32-1) - 1` which corresponds to the bit
-    pattern of all `1`s except for a `0` in the most-significant digit.
-
-  * This representation of integers is called
-    (twos-complement)[http://en.wikipedia.org/wiki/Two's_complement] which makes
-    implementation of basic numerical operations over these numbers easy.
-
-  * As a result, `1 + INT_MAX` produces the bit pattern `10000000 ... 0`.
-    Interpreting this in twos-complement results in the *most-negative* integer
-    possible.  This is an example of *arithmetic overflow*.
-
-  * If we know we do not need negative integer values, we can tell C to
-    *interpret* the bits not in two's complement but as a standard binary number
-    thus reclaiming the sign bit as an additional digit) by using the `unsigned`
-    modifier.  Note that the size of the integer type does not change with
-    `unsigned`, only the *interpretation* of the bit pattern changes!  Note: 
-    `unsigned` can be used to modify any integer data type (e.g. `unsigned char`).
-
-* `long` and `short` are modifiers on the primitive types to change sizes but
-   not their interpretation.
-
-* `char` is defined to be the smallest addressable chunk of memory on the
-  underlying hardware, i.e., 1 byte.  This comes from the fact that we represent
-  individual characters in C using the
-  [ASCII](http://en.wikipedia.org/wiki/Ascii) encoding which assigns the values
-  0-255 to different characters in the English alphabet along with other
-  symbols.
-
-  * Because `char` is a single byte, you frequently see `char` used to represent
-    raw byte arrays, e.g., `char buf [100]` declares an array of size 100 bytes
-    on the stack.
-
-* The floating point numbers are represented using the [IEEE standard for
-  floating-point arithmetic](http://en.wikipedia.org/wiki/IEEE_floating_point)
-  which defines how floats are represented with bit strings as well as
-  requirements on how operations over those floats should behave.
-
-* As you may have noticed, there is no similar type to Java's `boolean` in the
-  previous code sample.  C does not explicitly provide a boolean type, as shown 
-  in the following example ([bool.c](bool.c)):
-
-``` c
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-
-int main(int argc, char **argv) {
-    int val = 0;
-    if (1) {
-        printf("Eh!\n");
-    }
-    if (true) {
-        printf("Good...\n");
-    }
-    if (val = 0) {
-        printf("Doesn't fire...\n");
-    }
-    return 0;
-}
-```
-
-* Unlike Java, C does not have a built-in boolean type.  Instead, numeric values
-  operate as booleans where the **value zero** denotes false and any **non-zero
-  value** denotes true.
-
-  * As a convenience, you can include `stdbool.h` which defines `bool`, `true`,
-  and `false` to be `int` (really `_Bool` but it is morally a numeric type),
-  `1`, and `0`, respectively.
-
-  * For example, this makes confusing `=` and `==` within a if-statement even
-    more dangerous.  The result of an assignment is the value being assigned, so
-    the example above compiles without error but performs unexpectedly!
-
-* Like most languaegs, C also provides arrays.  In C, arrays can be either 
-  stack-allocated or heap-allocated.  In future sections, we'll cover the 
-  difference and trade-offs between these two types of arrays.  In this 
-  example, we examine how to declare a stack-allocated array in C.
-  [simple_arrays.c](simple_arrays.c).
-
-``` c
-#include <stdio.h>
-
-int main(void) {
-    int arr [] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    int i;
-    for (i = 0; i < 10; i++) {
-        printf("%d\n", arr[i]);
-    }
-    return 0;
-}
-```
-
-* If you are familiar with Java, you have a leg up here as it is a *C-like*
-  language.  Programming-in-the-small basics, e.g., variable declarations, basic
-  types, for-loops, and arrays, all transfer with some minor differences:
-
-  + The declaration of `arr` is the declaration of a *stack-allocated* array in
-    C.  In Java, you would flip the position of the brackets and write `int[]
-    arr = { 1, ..., 10 };`.  There is a subtle, yet very important distinction
-    here in that the Java array is (always) *heap-allocated* which we will visit
-    later in these notes.
-
-  + Note that we declare `i` on a line separate from the head of the `for` loop.
-    This is our first example of writing *safely standards compliant* code.  C
-    compilers typically support many different versions of the C language.
-    Typically the default compilation mode for most compilers is the *C89*
-    version of the spec which says that all local variables must be declared at
-    the top of the *scope blocks* they are declared in (i.e., each block
-    enclosed by curly braces).  To be safe, we respect this rule, but if you
-    know your compiler supports declaration of variable like in Java, e.g., C89
-    with GNU extensions (the gcc default) or later versions of the standard, you
-    can declare locals in the same plaecs as you would in Java.
-
-* C also provides `structs` for grouping data-types together into a
-  data structure.  However, since C is a procedural language and not an 
-  object-oriented language, these data structures do not have any methods 
-  associated with the data.  They are simply a convenient mechanism for 
-  grouping related pieces of data.  The following example demonstrates how
-  to declare and use structures. [structs.c](structs.c).
-
-```
-#include <stdio.h>
-
-struct point_t{
-    int x;
-    int y;
-};
-
-int main(void){
-    struct point_t p;
-    p.x = 1;
-    p.y = 2;
-
-    printf("(%d,%d)\n",p.x,p.y);
-
-    return 0;
-}
-```
-
-* In this example, we declare a point structure with two integers (an x and 
-  y coordinate).  This `struct` is simply a more convenient way to group 
-  pieces of data together.
-
-* As a matter of pragmatics, this bare `struct` definition is rarely what we
-  want.  The reason for this is that whenever we want to use this `struct`,
-  e.g., a local variable, we must qualify `point` with the `struct` keyword:
-  `struct point p`.  This is because the `struct` definition doesn't define a
-  type proper but a `struct`.
-
-* To define `point` as a type that we can use without qualification, we use
-  `typedef` to create an alias for `struct point`.  In general, `typedef`s have
-  the following form:
-
-``` c
-typedef int error_code;
-```
-
-* This example `typedef` defines `error_code` as an alias for `int`.  Therefore
-  `error_code` can be used where ever we expect an `int`.  This is useful as a
-  point of documentation to have an `error_code` type that is really an `int`.
-
-* We also use `typedef` to bring a `struct` into the type world.  For example,
-  in [point.h](src/point.h) we combine `typedef` and `struct` as follows:
-
-``` c
-typedef struct point {
-    int x;
-    int y;
-} point;
-```
-
-* While it looks redundant, this has the effect of making `point` an alias for
-  `struct point` which allows us to use `point` as a type throughout our code.

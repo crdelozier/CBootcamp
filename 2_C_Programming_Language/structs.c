@@ -1,12 +1,26 @@
 #include <stdio.h>
 
+typedef int error_code;
+
+typedef double currency;
+typedef double velocity;
+
+
 struct point_t{
   int x;
   int y;
 };
 
+typedef struct point_t point;
+
 int main(void){
-  struct point_t p;
+  point p;
+
+  point arr[10];
+
+  int xs[10];
+  int ys[10];
+
   p.x = 1;
   p.y = 2;
 

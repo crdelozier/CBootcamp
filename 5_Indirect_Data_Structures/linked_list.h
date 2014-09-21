@@ -1,12 +1,14 @@
 #pragma once
 
-typedef struct node_t{
+struct node_t{
   void *_data;
   struct node_t *_next;
-} node;
+};
+
+typedef struct node_t node;
 
 typedef struct list_t{
-  struct node_t *_start;
+  node *_start;
 } list;
 
 void push_front(list *list, void *data);

@@ -1,47 +1,59 @@
 #include "linked_list.h"
 
 #include <stdlib.h>
+#include <assert.h>
 
-node* get_new_node(void *data){
+/*
+ * node: int _data, node *_next
+ * list: node *_start
+ */
+
+node* get_new_node(){
   node *new_node = (node*)malloc(sizeof(node));
-  new_node->_data = data;
   new_node->_next = NULL;
+  new_node->_data = 0;
   return new_node;
 }
 
-node* find_last_node(node *start){
-  node *current_node = start;
-  while(current_node->_next != NULL){
-    current_node = current_node->_next;
-  }
-  return current_node;
-}
-
 void push_front(list *l, void *data){
-  node *new_node = get_new_node(data);
+  assert(l != NULL);
+  node *new_node = get_new_node();
+  new_node->_data = data;
+
   if(l->_start == NULL){
     l->_start = new_node;
   }else{
-    new_node->_next = l->_start;
+    node *old_start = l->_start;
     l->_start = new_node;
+    new_node->_next = old_start;
   }
 }
 
 void push_back(list *l, void *data){
-  node *new_node = get_new_node(data);
+  assert(l != NULL);
+  node *new_node = get_new_node();
+  new_node->_data = data;
+
   if(l->_start == NULL){
     l->_start = new_node;
-  }else{
-    node *last_node = find_last_node(l->_start);
-    last_node->_next = new_node;
+    return;
   }
+
+  node *last_node = l->_start;
+  node *current_node = last_node->_next;
+
+  while(current_node != NULL){
+    last_node = current_node;
+    current_node = last_node->_next;
+  }
+
+  last_node->_next = new_node;
 }
 
 void* pop_front(list *l){
   void *data;
-  if(is_empty(l)){
-    return NULL;
-  }
+  assert(l != NULL);
+  assert(!is_empty(l));
 
   node *old_start = l->_start;
   l->_start = old_start->_next;
@@ -53,43 +65,49 @@ void* pop_front(list *l){
 
 void* pop_back(list *l){
   void *data;
-  node *current_node = l->_start;
-  node *last_node = NULL;
+  assert(l != NULL);
+  assert(!is_empty(l));
 
-  if(is_empty(l)){
-    return NULL;
-  }
-
-  if(length(l) == 1){
-    current_node = l->_start;
-    data = current_node->_data;
+  if(l->_start->_next == NULL){
+    data = l->_start->_data;
+    free(l->_start);
     l->_start = NULL;
-    free(current_node);
     return data;
   }
 
+  node *last_node = l->_start;
+  node *current_node = last_node->_next;
+
   while(current_node->_next != NULL){
     last_node = current_node;
-    current_node = current_node->_next;
+    current_node = last_node->_next;
   }
 
-  data = current_node->_data;
   last_node->_next = NULL;
+  data = current_node->_data;
   free(current_node);
 
   return data;
 }
 
 int length(list *l){
-  node *current_node = l->_start;
   int len = 0;
-  while(current_node != NULL){
-    current_node = current_node->_next;
-    len++;
+  
+  if(l == NULL){
+    return 0;
   }
+
+  node *current_node = l->_start;
+
+  while(current_node != NULL){
+    current_node = 
+      current_node->_next;
+    ++len;
+  }
+
   return len;
 }
 
 int is_empty(list *l){
-  return l == NULL || l->_start == NULL;
+  return l->_start == NULL;
 }

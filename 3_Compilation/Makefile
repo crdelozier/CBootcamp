@@ -1,3 +1,5 @@
+CFLAGS += -O2
+
 all: prog
 
 prog: multi_cu1.o multi_cu2.o

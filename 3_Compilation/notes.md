@@ -101,6 +101,11 @@ void print_num(int n);
 #endif // _MULTI_CU_H
 ```
 
+* Main takeaways:
+  * # defines
+  * Scoping for function, variable, and macro names
+  * Definitions versus declarations
+
 * To compile the entire program, we compile each of the .c files separately into
   object files and then combine those two object files during linking into a
   final executable.

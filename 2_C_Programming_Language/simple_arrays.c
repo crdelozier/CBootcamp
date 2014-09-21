@@ -1,17 +1,11 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 
-int main(int argc, char **argv) {
-  int val = 0;
-  if (1) {
-    printf("Eh!\n");
-  }
-  if (true) {
-    printf("Good...\n");
-  }
-  if (val = 0) {
-    printf("Doesn't fire...\n");
+int main() {
+  int arr[] = {1,2,3,4,5,6,7,8,9,10};
+  int arr2[10];
+  int i;
+  for(i = 0; i < 100; i++){
+    printf("%d\n", arr[i]);
   }
   return 0;
 }

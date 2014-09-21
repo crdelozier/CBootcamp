@@ -1,12 +1,31 @@
 #include <stdio.h>
 
+int *p;
+
+/* Globals */
+/* -------- */
+/* 0x0600 p [ 0xFFF8 ] */
+
+/* Stack */
+/* -------- */
+/* 0xFFF0 main */
+/* 0xFFF4 g */
+/* 0xFFF8 y [ 0 ]  */
+
+void f(){
+  int x = 1;
+  p = &x;
+}
+
+void g(){
+  int y = 0;
+  printf("%d\n",*p);
+}
+
 int main(void){ 
-  int x = 0;
-  int *p = &x;
-
+  f();
   *p = 1;
-
-  printf("%d\n",x);
+  g();
 
   return 0;
 }

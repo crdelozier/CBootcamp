@@ -41,6 +41,10 @@ int main(void) {
     corresponding function body.  However, most compilers will accept empty
     parenthesis in either situation without complaint.
 
+* Main takeaways from this example:
+  * int main - You'll need it in every C program you write.
+  * printf - Used to output to the command-line
+
 * Next, let's jump ahead a bit and examine a program that processes some user 
   input with [read_args_ex.c](read_args_ex.c):
 
@@ -91,3 +95,8 @@ int main(int argc, char **argv) {
     function will blindly attempt to print the arguments as the data-types
     specified in the format string, possibly causing it to perform unsafe
     actions.
+
+* Main takeaways from this example:
+  * argc and argv for command-line arguments
+  * char* is equivalent to a C-string
+  * printf format specifiers and the dangers of getting them wrong

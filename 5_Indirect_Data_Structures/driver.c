@@ -4,8 +4,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+typedef struct point_t{
+  int x;
+  int y;
+} point;
+
 int main(int argc, char **argv){
   list *l = (list*)malloc(sizeof(list));
+  list *l2 = (list*)malloc(sizeof(list));
+  point p1;
+  point p2;
+
+  l->_start = NULL;
+  l2->_start = NULL;
+
+  push_back(l2,(void*)&p1);
+  push_back(l2,(void*)&p2);
 
   assert(is_empty(l));
 
@@ -21,6 +35,9 @@ int main(int argc, char **argv){
   assert((int)pop_back(l) == 2);
 
   printf("All tests passed!\n");
+
+  free(l);
+  free(l2);
 
   return 0;
 }

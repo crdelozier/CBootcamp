@@ -12,6 +12,7 @@ void by_value(point p){
 
 void by_reference(point *p){
   p->x = 1;
+  (*p).x = 1;
   printf("(%d,%d)\n",p->x,p->y);
 }
 
