@@ -5,10 +5,10 @@ int main(){
   char buf[100];
   char *tok;
 
-  strncpy(buf,"Hello world!",13);
+  strncpy(buf,"Hello world!",100);
   printf("%s\n",buf);
 
-  strncat(&buf[12]," Hello again!",14);
+  strncat(&buf[12]," Hello again!",100);
   printf("%s\n",buf);
 
   if(strncmp(buf,"Hello",5) == 0){

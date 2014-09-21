@@ -10,7 +10,7 @@ void ignore_for_now(){
 
 int main(void){ 
   srand(3);
-  int same = rand() % 100;
+  int same = rand() % 100; // 0-99
   printf("%d\n",same);
 
   ignore_for_now();

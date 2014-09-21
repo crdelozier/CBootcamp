@@ -43,5 +43,7 @@ int main(){
 
   printf("(%d,%d)\n",p2.x,p2.y);
 
+  fclose(file);
+
   return 0;
 }

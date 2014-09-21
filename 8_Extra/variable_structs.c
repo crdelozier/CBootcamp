@@ -9,9 +9,19 @@ typedef struct key_t{
   char _value[1];
 } key;
 
+typedef struct key_other_t{
+  int _length;
+  char *_value;
+} other_key;
+
 int main(){
   key *k1 = (key*)malloc(sizeof(int) + (10 * sizeof(char)));
+  // k1 { int _length; char _value[10] };
+
   key *k2 = (key*)malloc(sizeof(int) + (20 * sizeof(char)));
+  // k2 { int _length; char _value[20] };
+
+  printf("%d\n",sizeof(key));
 
   k1->_length = 10;
   k2->_length = 20;

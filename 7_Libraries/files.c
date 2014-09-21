@@ -32,5 +32,7 @@ int main(){
 
   printf("%s\n",buf);
 
+  fclose(file);
+
   return 0;
 }

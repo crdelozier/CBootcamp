@@ -4,6 +4,7 @@
 
 void handler(int param){
   printf("Null pointer exception!\n");
+  exit(1);
 }
 
 int main(){
@@ -11,8 +12,7 @@ int main(){
   int *p = NULL;
 
   previous_handler = signal(SIGSEGV,handler);
-
-  raise(SIGSEGV);
+  *p = 5;
 
   return 0;
 }

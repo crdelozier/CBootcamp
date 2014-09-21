@@ -4,8 +4,8 @@
 int main(){
   int *a = (int*)malloc(10 * sizeof(int));
 
-  int *a1 = &a[0];
-  int *a2 = &a[9];
+  int *a1 = &a[0]; // a1 = a;
+  int *a2 = &a[9]; // a2 = a + 9;
   int c = 0;
 
   for(c = 0; c < 10; c++){
